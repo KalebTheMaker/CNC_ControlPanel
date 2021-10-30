@@ -7,15 +7,6 @@
 ##
 ## By: Kaleb Clark (KalebTheMaker)
 ###############################################################################
-* Button Notes:
-*   The buttons that emulate a keyboard are setup to mimic holding down a key
-*   on the keyboard. Normally here you would get a single keydown and keyup
-*   event that would cycle every iteration. I used a keyboard debugger to see
-*   exactly what happens on a keyboard when you hold the button down, and this
-*   is what I found. There is an initial key down event, followed by repeated
-*   key down events (rather than keydown, key up every cycle). This is how I am
-*   sending them here. Check for presss, repeat the keydown event non-blocking
-*   until released, then send the release signal.
 */
 #include <Arduino.h>
 #include <RotaryEncoder.h>
@@ -28,6 +19,12 @@
 #define ENC_PIN1 9
 #define ENC_PIN2 10
 
+// Rotary Switch Pins
+#define ROT_POS_0 = 14
+#define ROT_POS_1 = 15
+#define ROT_POS_2 = 16
+#define ROT_POS_3 = 17
+
 // Button Pins
 #define BTN_UP_PIN 3
 #define BTN_DOWN_PIN 4
@@ -35,6 +32,7 @@
 // Globals
 const int key_press_delay = 5;
 const int key_hold_delay = 30;
+int enc_axis = -1;
 
 // Instantiate Objects
 //KTM_Keyboard kb;
@@ -58,6 +56,12 @@ void setup() {
   //kb.init();
   Keyboard.begin();
 
+  // Rotary Switch
+  pinMode(ROT_POS_0, INPUT_PULLUP);
+  pinMode(ROT_POS_1, INPUT_PULLUP);
+  pinMode(ROT_POS_2, INPUT_PULLUP);
+  pinMode(ROT_POS_3, INPUT_PULLUP);
+
   // Buttons
   btn_up.begin();
   //btn_up.onPressed(handleBtnUpPressed);
@@ -73,6 +77,13 @@ void setup() {
 
 
 void loop() {
+  // Handle Rotary Switch ==================================================================
+  if(digitalRead(ROT_POS_0) == LOW) { enc_axis = 0; } else
+  if(digitalRead(ROT_POS_1) == LOW) { enc_axis = 1; } else  // Y
+  if(digitalRead(ROT_POS_2) == LOW) { enc_axis = 2; } else  // Z
+  if(digitalRead(ROT_POS_3) == LOW) { enc_axis = 3; }       // A
+  // END Handle Rotary Switch ==============================================================
+  
   // Handle Encoder ========================================================================
   long enc_pos = 0;                               // Encoder Position variable
   encoder->tick();                                // tick the encoder
@@ -88,20 +99,25 @@ void loop() {
     enc_pos = enc_new_pos;                        // Reset Position
   }
   // End Handle Encoder ====================================================================
+  
   // Handle Buttons ========================================================================
-
   btn_up.read();
   btn_down.read();
 
   // Button Up -------------------------------------
   if(btn_up.isPressed()) {                        // Check to see if button is pressed
     if(upHoldDelay.update()) {                    // Check to see if non-blocking time has passed
-      Keyboard.press(KEY_UP_ARROW);               // Send Keyboard key down press
+      Serial.println("Button Up Pressed");
+      Keyboard.press(KEY_UP_ARROW);
+//      if(upPressDelay.update()) {
+//        Keyboard.release(KEY_UP_ARROW);      
+//      }
     }
   }
 
-  if(btn_up.wasReleased()) {                      // Check to see if button was released since last press
-    Keyboard.release(KEY_UP_ARROW);               // Release keyboard key.
+  if(btn_up.wasReleased()) {
+    Serial.println("Button Up Released");
+    Keyboard.release(KEY_UP_ARROW);
   }
 
   // Button Down -----------------------------------
@@ -133,16 +149,43 @@ void handleBtnDownPressed()
   Keyboard.release(KEY_DOWN_ARROW);
 }
 
+void encoderButton() {
+  
+}
+
 /*
  * handleInc(long) 
  * Handles the encoder Incrementing
  */
 void handleInc(long enc_pos) 
 {
-  Serial.print("Incremenet: "); Serial.println(enc_pos);
-  Keyboard.press(KEY_LEFT_ARROW);
-  delay(key_press_delay);
-  Keyboard.release(KEY_LEFT_ARROW);
+  switch (enc_axis) {
+    case 0: // X+
+      Keyboard.press(KEY_LEFT_CTRL);
+      Keyboard.press(KEY_RIGHT_ARROW);
+      delay(key_press_delay);
+      Keyboard.release(KEY_LEFT_CTRL);
+      Keyboard.release(KEY_RIGHT_ARROW);
+      break;
+    case 1: // Y+
+      Keyboard.press(KEY_LEFT_CTRL);
+      Keyboard.press(KEY_ARROW_UP);
+      delay(key_press_delay);
+      Keyboard.release(KEY_LEFT_CTRL);
+      Keyboard.release(KEY_ARROW_UP);
+      break;
+    case 2: // Z+
+      Keyboard.press(KEY_LEFT_CTRL);
+      Keyboard.press(KEY_PAGE_UP);
+      delay(key_press_delay);
+      Keyboard.press(KEY_LEFT_CTRL);
+      Keyboard.press(KEY_PAGE_UP);
+      break;
+  }
+  //Serial.print("Incremenet: "); Serial.println(enc_pos);
+  //Keyboard.press(KEY_LEFT_ARROW);
+  //delay(key_press_delay);
+  //Keyboard.release(KEY_LEFT_ARROW);
 }
 
 /*
@@ -151,8 +194,31 @@ void handleInc(long enc_pos)
  */
 void handleDec(long enc_pos)
 {
-  Serial.print("Decrement: "); Serial.println(enc_pos);
-  Keyboard.press(KEY_RIGHT_ARROW);
-  delay(key_press_delay);
-  Keyboard.release(KEY_RIGHT_ARROW);
+  switch (enc_axis) {
+    case 0: // X-
+      Keyboard.press(KEY_LEFT_CTRL);
+      Keyboard.press(KEY_LEFT_ARROW);
+      delay(key_press_delay);
+      Keyboard.release(KEY_LEFT_CTRL);
+      Keyboard.release(KEY_LEFT_ARROW);
+      break;
+    case 1: // Y-
+      Keyboard.press(KEY_LEFT_CTRL);
+      Keyboard.press(KEY_DOWN_ARROW);
+      delay(key_press_delay);
+      Keyboard.release(KEY_LEFT_CTRL);
+      Keyboard.release(KEY_DOWN_ARROW);
+      break;
+    case 2: // Z-
+      Keyboard.press(KEY_LEFT_CTRL);
+      Keyboard.press(KEY_PAGE_DOWN);
+      delay(key_press_delay);
+      Keyboard.release(KEY_LEFT_CTRL);
+      Keyboard.release(KEY_PAGE_DOWN);
+      break;
+  }
+  //Serial.print("Decrement: "); Serial.println(enc_pos);
+  //Keyboard.press(KEY_RIGHT_ARROW);
+  //delay(key_press_delay);
+  //Keyboard.release(KEY_RIGHT_ARROW);
 }
