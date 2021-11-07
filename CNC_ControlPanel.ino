@@ -20,14 +20,17 @@
 #define ENC_PIN2 10
 
 // Rotary Switch Pins
-#define ROT_POS_0 = 14
-#define ROT_POS_1 = 15
-#define ROT_POS_2 = 16
-#define ROT_POS_3 = 17
+#define ROT_POS_0 14
+#define ROT_POS_1 15
+#define ROT_POS_2 16
+#define ROT_POS_3 17
 
 // Button Pins
 #define BTN_UP_PIN 3
 #define BTN_DOWN_PIN 4
+
+// Toggle Switch
+#define TOG_SWITCH 13
 
 // Globals
 const int key_press_delay = 5;
@@ -62,6 +65,9 @@ void setup() {
   pinMode(ROT_POS_2, INPUT_PULLUP);
   pinMode(ROT_POS_3, INPUT_PULLUP);
 
+  // Toggle Switch
+  pinMode(TOG_SWITCH, INPUT_PULLUP);
+  
   // Buttons
   btn_up.begin();
   //btn_up.onPressed(handleBtnUpPressed);
@@ -77,6 +83,12 @@ void setup() {
 
 
 void loop() {
+  // Handle Toggle Switch
+  // Doing this at top so we can return if LOW.
+  if(digitalRead(TOG_SWITCH) == LOW) {
+    return;
+  }
+  
   // Handle Rotary Switch ==================================================================
   if(digitalRead(ROT_POS_0) == LOW) { enc_axis = 0; } else
   if(digitalRead(ROT_POS_1) == LOW) { enc_axis = 1; } else  // Y
@@ -169,10 +181,10 @@ void handleInc(long enc_pos)
       break;
     case 1: // Y+
       Keyboard.press(KEY_LEFT_CTRL);
-      Keyboard.press(KEY_ARROW_UP);
+      Keyboard.press(KEY_UP_ARROW);
       delay(key_press_delay);
       Keyboard.release(KEY_LEFT_CTRL);
-      Keyboard.release(KEY_ARROW_UP);
+      Keyboard.release(KEY_UP_ARROW);
       break;
     case 2: // Z+
       Keyboard.press(KEY_LEFT_CTRL);
