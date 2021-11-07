@@ -29,6 +29,11 @@
 #define BTN_UP_PIN 3
 #define BTN_DOWN_PIN 4
 
+// LED Pins
+#define LED_RED_PIN 18
+#define LED_BLUE_PIN 19
+#define LED_GREEN_PIN 20
+
 // Toggle Switch
 #define TOG_SWITCH 13
 
