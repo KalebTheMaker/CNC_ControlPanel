@@ -28,6 +28,10 @@
 // Button Pins
 #define BTN_UP_PIN 3
 #define BTN_DOWN_PIN 4
+#define BTN_LEFT_PIN 5
+#define BTN_RIGHT_PIN 6
+#define BTN_PGUP_PIN 7
+#define BTN_PGDN_PIN 8
 
 // LED Pins
 #define LED_RED_PIN 18
@@ -38,7 +42,7 @@
 #define TOG_SWITCH 13
 
 // Globals
-const int key_press_delay = 5;
+const int key_press_delay = 10;
 const int key_hold_delay = 30;
 int enc_axis = -1;
 
@@ -47,10 +51,18 @@ int enc_axis = -1;
 RotaryEncoder *encoder = nullptr;
 EasyButton btn_up(BTN_UP_PIN, 40, true, true);
 EasyButton btn_down(BTN_DOWN_PIN, 40, true, true);
+EasyButton btn_right(BTN_RIGHT_PIN, 40, true, true);
+EasyButton btn_left(BTN_LEFT_PIN, 40, true, true);
+EasyButton btn_pgup(BTN_PGUP_PIN, 40, true, true);
+EasyButton btn_pgdn(BTN_PGDN_PIN, 40, true, true);
 
 noDelay upHoldDelay(key_hold_delay);
-noDelay upPressDelay(key_press_delay);
+//noDelay upPressDelay(key_press_delay);
 noDelay downHoldDelay(key_hold_delay);
+noDelay leftHoldDelay(key_hold_delay);
+noDelay rightHoldDelay(key_hold_delay);
+noDelay pgupHoldDelay(key_hold_delay);
+noDelay pgdnHoldDelay(key_hold_delay);
 
 
 // Encoder Callback
@@ -70,14 +82,24 @@ void setup() {
   pinMode(ROT_POS_2, INPUT_PULLUP);
   pinMode(ROT_POS_3, INPUT_PULLUP);
 
+  // RGB LED
+  pinMode(LED_RED_PIN, OUTPUT);
+  pinMode(LED_BLUE_PIN, OUTPUT);
+  pinMode(LED_GREEN_PIN, OUTPUT);
+  digitalWrite(LED_RED_PIN, LOW);
+  digitalWrite(LED_GREEN_PIN, LOW);
+  digitalWrite(LED_BLUE_PIN, LOW);
+
   // Toggle Switch
   pinMode(TOG_SWITCH, INPUT_PULLUP);
   
   // Buttons
   btn_up.begin();
-  //btn_up.onPressed(handleBtnUpPressed);
   btn_down.begin();
-  //btn_down.onPressed(handleBtnDownPressed);
+  btn_left.begin();
+  btn_right.begin();
+  btn_pgup.begin();
+  btn_pgdn.begin();
 
   // Encoder Setup
   encoder = new RotaryEncoder(ENC_PIN1, ENC_PIN2, RotaryEncoder::LatchMode::FOUR0);
@@ -90,7 +112,12 @@ void setup() {
 void loop() {
   // Handle Toggle Switch
   // Doing this at top so we can return if LOW.
-  if(digitalRead(TOG_SWITCH) == LOW) {
+  if(digitalRead(TOG_SWITCH) == HIGH) {
+    digitalWrite(LED_BLUE_PIN, LOW);
+    digitalWrite(LED_RED_PIN, HIGH);
+  } else if(digitalRead(TOG_SWITCH) == LOW) {
+    digitalWrite(LED_RED_PIN, LOW);
+    digitalWrite(LED_BLUE_PIN, HIGH);
     return;
   }
   
@@ -110,9 +137,9 @@ void loop() {
   if(enc_pos != enc_new_pos) {
     int dir = (int)(encoder->getDirection());     // Get Direction as Integer
 
-    if(dir > 0) { handleInc(enc_new_pos); } else  // Handle Increment
-    if(dir < 0) { handleDec(enc_new_pos); }       // Handle Decrement
-    
+    if(dir < 0) { handleInc(enc_new_pos); } else  // Handle Increment
+    if(dir > 0) { handleDec(enc_new_pos); }       // Handle Decrement
+
     enc_pos = enc_new_pos;                        // Reset Position
   }
   // End Handle Encoder ====================================================================
@@ -120,15 +147,16 @@ void loop() {
   // Handle Buttons ========================================================================
   btn_up.read();
   btn_down.read();
+  btn_left.read();
+  btn_right.read();
+  btn_pgup.read();
+  btn_pgdn.read();
 
   // Button Up -------------------------------------
   if(btn_up.isPressed()) {                        // Check to see if button is pressed
     if(upHoldDelay.update()) {                    // Check to see if non-blocking time has passed
       Serial.println("Button Up Pressed");
       Keyboard.press(KEY_UP_ARROW);
-//      if(upPressDelay.update()) {
-//        Keyboard.release(KEY_UP_ARROW);      
-//      }
     }
   }
 
@@ -141,33 +169,76 @@ void loop() {
   if(btn_down.isPressed()) {
     if(downHoldDelay.update()) {
       Serial.println("Button down Pressed");
+      Keyboard.press(KEY_DOWN_ARROW);
     }
   }
 
+  if(btn_down.wasReleased()) {
+    Keyboard.release(KEY_DOWN_ARROW);
+  }
+
+  // Button Right -----------------------------------
+  if(btn_right.isPressed()) {
+    if(rightHoldDelay.update()) {
+      Serial.println("Button right Pressed");
+      Keyboard.press(KEY_RIGHT_ARROW);
+    }
+  }
+
+  if(btn_right.wasReleased()) {
+    Keyboard.release(KEY_RIGHT_ARROW);
+  }
+
+  // Button Left -----------------------------------
+  if(btn_left.isPressed()) {
+    if(leftHoldDelay.update()) {
+      Serial.println("Button left Pressed");
+      Keyboard.press(KEY_LEFT_ARROW);
+    }
+  }
+
+  if(btn_left.wasReleased()) {
+    Keyboard.release(KEY_LEFT_ARROW);
+  }
+
+  // Button Page Up -----------------------------------
+  if(btn_pgup.isPressed()) {
+    if(pgupHoldDelay.update()) {
+      Serial.println("Button pgup Pressed");
+      Keyboard.press(KEY_PAGE_UP);
+    }
+  }
+
+  if(btn_pgup.wasReleased()) {
+    Keyboard.release(KEY_PAGE_UP);
+  }
+
+  // Button Page Down -----------------------------------
+  if(btn_pgdn.isPressed()) {
+    if(pgdnHoldDelay.update()) {
+      Serial.println("Button pgdn Pressed");
+      Keyboard.press(KEY_PAGE_DOWN);
+    }
+  }
+
+  if(btn_pgdn.wasReleased()) {
+    Keyboard.release(KEY_PAGE_DOWN);
+  }
 
   
 }
 
-void handleBtnUpPressed()
+/*
+ * ctrlKeyPress(uint8_t)
+ * Sequence for control modifier
+ */
+void ctrlKeyPress(uint8_t k)
 {
-
-  
-  //Serial.println("Button Up Pressed");
-  //Keyboard.press(KEY_UP_ARROW);
-  //delay(key_press_delay);
-  //Keyboard.release(KEY_UP_ARROW);
-}
-
-void handleBtnDownPressed()
-{
-  Serial.println("Button Down Pressed");
-  Keyboard.press(KEY_DOWN_ARROW);
+  Keyboard.press(KEY_RIGHT_CTRL);
+  delay(2);
+  Keyboard.press(k);
   delay(key_press_delay);
-  Keyboard.release(KEY_DOWN_ARROW);
-}
-
-void encoderButton() {
-  
+  Keyboard.releaseAll();
 }
 
 /*
@@ -176,33 +247,18 @@ void encoderButton() {
  */
 void handleInc(long enc_pos) 
 {
+  Serial.println(enc_axis);
   switch (enc_axis) {
     case 0: // X+
-      Keyboard.press(KEY_LEFT_CTRL);
-      Keyboard.press(KEY_RIGHT_ARROW);
-      delay(key_press_delay);
-      Keyboard.release(KEY_LEFT_CTRL);
-      Keyboard.release(KEY_RIGHT_ARROW);
+      ctrlKeyPress(KEY_RIGHT_ARROW);
       break;
     case 1: // Y+
-      Keyboard.press(KEY_LEFT_CTRL);
-      Keyboard.press(KEY_UP_ARROW);
-      delay(key_press_delay);
-      Keyboard.release(KEY_LEFT_CTRL);
-      Keyboard.release(KEY_UP_ARROW);
+      ctrlKeyPress(KEY_UP_ARROW);
       break;
     case 2: // Z+
-      Keyboard.press(KEY_LEFT_CTRL);
-      Keyboard.press(KEY_PAGE_UP);
-      delay(key_press_delay);
-      Keyboard.press(KEY_LEFT_CTRL);
-      Keyboard.press(KEY_PAGE_UP);
+      ctrlKeyPress(KEY_PAGE_UP);
       break;
   }
-  //Serial.print("Incremenet: "); Serial.println(enc_pos);
-  //Keyboard.press(KEY_LEFT_ARROW);
-  //delay(key_press_delay);
-  //Keyboard.release(KEY_LEFT_ARROW);
 }
 
 /*
@@ -211,31 +267,16 @@ void handleInc(long enc_pos)
  */
 void handleDec(long enc_pos)
 {
+  Serial.println(enc_axis);
   switch (enc_axis) {
     case 0: // X-
-      Keyboard.press(KEY_LEFT_CTRL);
-      Keyboard.press(KEY_LEFT_ARROW);
-      delay(key_press_delay);
-      Keyboard.release(KEY_LEFT_CTRL);
-      Keyboard.release(KEY_LEFT_ARROW);
+      ctrlKeyPress(KEY_LEFT_ARROW);
       break;
     case 1: // Y-
-      Keyboard.press(KEY_LEFT_CTRL);
-      Keyboard.press(KEY_DOWN_ARROW);
-      delay(key_press_delay);
-      Keyboard.release(KEY_LEFT_CTRL);
-      Keyboard.release(KEY_DOWN_ARROW);
+      ctrlKeyPress(KEY_DOWN_ARROW);
       break;
     case 2: // Z-
-      Keyboard.press(KEY_LEFT_CTRL);
-      Keyboard.press(KEY_PAGE_DOWN);
-      delay(key_press_delay);
-      Keyboard.release(KEY_LEFT_CTRL);
-      Keyboard.release(KEY_PAGE_DOWN);
+      ctrlKeyPress(KEY_PAGE_DOWN);
       break;
   }
-  //Serial.print("Decrement: "); Serial.println(enc_pos);
-  //Keyboard.press(KEY_RIGHT_ARROW);
-  //delay(key_press_delay);
-  //Keyboard.release(KEY_RIGHT_ARROW);
 }
