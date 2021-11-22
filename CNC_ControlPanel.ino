@@ -3,7 +3,8 @@
 ## File: KTM_Pendant.ino
 ## Desc: Main Arduino program 
 ## Project: LaserControlSystem for Element14 Presents
-## License: 
+## License: GNU General Public License V3
+## URL: https://github.com/KalebTheMaker/CNC_ControlPanel
 ##
 ## By: Kaleb Clark (KalebTheMaker)
 ###############################################################################
@@ -11,7 +12,6 @@
 #include <Arduino.h>
 #include <RotaryEncoder.h>
 #include <NoDelay.h>
-//#include <KTM_Keyboard.h>
 #include <Keyboard.h>
 #include <EasyButton.h>
 
@@ -122,7 +122,7 @@ void loop() {
   }
   
   // Handle Rotary Switch ==================================================================
-  if(digitalRead(ROT_POS_0) == LOW) { enc_axis = 0; } else
+  if(digitalRead(ROT_POS_0) == LOW) { enc_axis = 0; } else  // X
   if(digitalRead(ROT_POS_1) == LOW) { enc_axis = 1; } else  // Y
   if(digitalRead(ROT_POS_2) == LOW) { enc_axis = 2; } else  // Z
   if(digitalRead(ROT_POS_3) == LOW) { enc_axis = 3; }       // A
