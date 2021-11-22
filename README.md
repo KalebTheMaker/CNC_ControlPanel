@@ -1,4 +1,4 @@
-![Element14 Image](https://github.com/KalebClark/MakerCalc/blob/master/EpisodeImage.png)
+![Element14 Image](https://github.com/KalebTheMaker/CNC_ControlPanel/blob/main/EpisodeImage.jpg)
 # CNC Control Panel
 This is a control panel for [MACH4 Motion Control software](https://www.machsupport.com/software/mach4/) that will be used with an [AVID CNC PRO4896](https://www.avidcnc.com/pro4896-4-x-8-cnc-router-kit-p-253.html) CNC Router. (Add More description)
 
