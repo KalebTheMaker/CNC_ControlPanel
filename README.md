@@ -7,7 +7,7 @@ The main home for this project is on the Element14 Community. There you can find
 
 You can report bugs here, but all other inqueries should be directed to the link below. I will be glad to answer any questions on the Element 14 Community Page.
 
-[Element14 Connumity Project Page](https://www.element14.com/community/docs/DOC-95185/l/episode-451-build-an-off-grid-wikipedia-with-raspberry-pi)
+[Element14 Community Project Page](https://www.element14.com/community/docs/DOC-95185/l/episode-451-build-an-off-grid-wikipedia-with-raspberry-pi)
 
 ## Keyboard Emulation
 The [Arduino NANO IOT 33](https://docs.arduino.cc/hardware/nano-33-iot) with Cortex-M0 SAMD21 processor can emulate a keyboard just like the [Arduino Micro](https://store-usa.arduino.cc/products/arduino-micro)'s ATmega32U4 processor.
