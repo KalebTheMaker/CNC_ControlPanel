@@ -1,4 +1,4 @@
-![Element14 Image](https://github.com/KalebTheMaker/CNC_ControlPanel/blob/main/EpisodeImage.jpg)
+[![Element14 Image](https://github.com/KalebTheMaker/CNC_ControlPanel/blob/main/EpisodeImage.jpg)](https://community.element14.com/challenges-projects/element14-presents/project-videos/w/documents/27366/episode-526-cnc-router-remote-control)
 # CNC Control Panel
 This is a control panel for [MACH4 Motion Control software](https://www.machsupport.com/software/mach4/) that will be used with an [AVID CNC PRO4896](https://www.avidcnc.com/pro4896-4-x-8-cnc-router-kit-p-253.html) CNC Router. (Add More description)
 
@@ -7,7 +7,7 @@ The main home for this project is on the Element14 Community. There you can find
 
 You can report bugs here, but all other inqueries should be directed to the link below. I will be glad to answer any questions on the Element 14 Community Page.
 
-[Element14 Community Project Page](https://www.element14.com/community/docs/DOC-95185/l/episode-451-build-an-off-grid-wikipedia-with-raspberry-pi)
+[Element14 Community Project Page](https://community.element14.com/challenges-projects/element14-presents/project-videos/w/documents/27366/episode-526-cnc-router-remote-control)
 
 ## Keyboard Emulation
 The [Arduino NANO IOT 33](https://docs.arduino.cc/hardware/nano-33-iot) with Cortex-M0 SAMD21 processor can emulate a keyboard just like the [Arduino Micro](https://store-usa.arduino.cc/products/arduino-micro)'s ATmega32U4 processor.
